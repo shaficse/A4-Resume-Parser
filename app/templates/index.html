@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume Information Extraction</title>
+</head>
+<body>
+    <h2>Upload PDF Resume for Extraction</h2>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="pdf_file">
+        <br><br>
+        <input type="submit" value="Upload and Extract">
+    </form>
+    {% if show_download %}
+        <h2>Extracted Information</h2>
+        {{ table_html|safe }}
+        <br>
+        <a href="/download">Download as Text File</a>
+    {% endif %}
+</body>
+</html>
+
