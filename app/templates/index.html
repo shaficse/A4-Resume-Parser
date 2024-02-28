@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,11 +50,24 @@
         a:hover {
             background-color: #0056b3;
         }
+        #file-name {
+            margin-top: 10px;
+            display: block; /* Make it take its own line */
+        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            var fileInput = document.querySelector('input[type="file"]');
+            var fileNameDisplay = document.getElementById('file-name');
+            
+            fileInput.onchange = function() {
+                if (fileInput.files.length > 0) {
+                    var fileName = fileInput.files[0].name;
+                    // fileNameDisplay.textContent = "Selected file: " + fileName;
+                }
+            };
+            
             document.querySelector('form').onsubmit = function() {
-                var fileInput = document.querySelector('input[type="file"]');
                 if (!fileInput.value) {
                     alert('Please select a file to upload.');
                     return false; // Prevent the form from submitting
@@ -67,10 +80,11 @@
 </head>
 <body>
     <div class="container">
-        <h2> Resume Parsing </h2>
+        <h2>Resume Parsing</h2>
         <form method="post" enctype="multipart/form-data">
             <input type="file" name="pdf_file" required>
             <br><br>
+            <span id="file-name"></span>
             <input type="submit" value="Upload and Extract">
         </form>
         {% if show_download %}

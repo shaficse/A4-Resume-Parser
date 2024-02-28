@@ -66,7 +66,7 @@ Start the Flask application with:
 `python app.py`
 
 
-Access the web interface at `http://localhost:5000` to upload a PDF resume and see the extracted information.
+Access the web interface at `http://127.0.0.1:5000` to upload a PDF resume and see the extracted information.
 
  Web Application's View
  <img src="figures/app-1.png"> 
@@ -76,6 +76,8 @@ Access the web interface at `http://localhost:5000` to upload a PDF resume and s
  <img src="figures/app-3.png"> 
 
  <img src="figures/app-4.png"> 
+
+  <img src="figures/app-4.1.png"> 
 
  Downloaded extracted file as CSV format (easy to load in excel or any downstream task program)
   <img src="figures/app-5.png"> 

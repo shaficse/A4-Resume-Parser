@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, send_file, after_this_request, make_response,session
+
 import spacy
 from spacy.matcher import Matcher
 import pandas as pd
@@ -83,20 +84,25 @@ def read_pdf_content(pdf_file):
     for page in reader.pages:
         content += page.extract_text() + " "
     return content
+
+from werkzeug.utils import secure_filename
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         pdf_file = request.files.get('pdf_file')
         if pdf_file and pdf_file.filename.endswith('.pdf'):
+            filename = secure_filename(pdf_file.filename)
+            session['filename'] = filename.rsplit('.', 1)[0]  # Save the base name of the file
             content = read_pdf_content(pdf_file.stream)
             extracted_info = extract_all_information(content)
             session['extracted_info'] = extracted_info  # Store in session for download
-            # Convert extracted info to HTML table
             table_html = generate_table_html(extracted_info)
             return render_template('index.html', table_html=table_html, show_download=True)
     else:
         return render_template('index.html', show_download=False)
-
+    
+#------#
 def generate_table_html(extracted_info):
     df = pd.DataFrame(list(extracted_info.items()), columns=['Entity Type', 'Extracted Information'])
     return df.to_html(index=False)
@@ -104,27 +110,22 @@ def generate_table_html(extracted_info):
 
 @app.route('/download')
 def download():
-    if 'extracted_info' in session:
+    if 'extracted_info' in session and 'filename' in session:
         extracted_info = session['extracted_info']
-        # Prepare data for DataFrame
+        filename = session['filename']  # Retrieve the original file base name
         data = []
         for key, values in extracted_info.items():
             for value in values:
                 data.append({"Entity Type": key, "Extracted Information": value})
         df = pd.DataFrame(data)
-        
-        # Convert DataFrame to CSV
         csv_data = df.to_csv(index=False)
-        
-        # Create a response with the CSV data
         response = make_response(csv_data)
         response.headers['Content-Type'] = 'text/csv'
-        response.headers['Content-Disposition'] = 'attachment; filename=extracted_info.csv'
+        response.headers['Content-Disposition'] = f'attachment; filename={filename}.csv'
         return response
-
     return "No information available for download", 404
 
-
+#--#
 
 def generate_dataframe_for_csv(extracted_info):
     # Flatten the extracted information for CSV format
@@ -136,12 +137,6 @@ def generate_dataframe_for_csv(extracted_info):
     # Convert list of dictionaries to a DataFrame
     df = pd.DataFrame(rows)
     return df
-
-def send_csv_file(csv_content, filename):
-    response = make_response(csv_content)
-    response.headers['Content-Type'] = 'text/csv'
-    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
-    return response
 
 
 if __name__ == '__main__':
