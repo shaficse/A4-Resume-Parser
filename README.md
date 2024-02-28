@@ -77,7 +77,7 @@ Access the web interface at `http://localhost:5000` to upload a PDF resume and s
 
  <img src="figures/app-4.png"> 
 
- Downloaded extracted text file
+ Downloaded extracted file as CSV format (easy to load in excel or any downstream task program)
   <img src="figures/app-5.png"> 
 
 ## Usage
