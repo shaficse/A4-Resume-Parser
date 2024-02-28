@@ -70,8 +70,15 @@ Access the web interface at `http://localhost:5000` to upload a PDF resume and s
 
  Web Application's View
  <img src="figures/app-1.png"> 
+
+ <img src="figures/app-2.png"> 
+
+ <img src="figures/app-3.png"> 
+
+ <img src="figures/app-4.png"> 
+
  Downloaded extracted text file
-  <img src="figures/app-output.png"> 
+  <img src="figures/app-5.png"> 
 
 ## Usage
 

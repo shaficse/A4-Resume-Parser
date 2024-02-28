@@ -101,28 +101,48 @@ def generate_table_html(extracted_info):
     df = pd.DataFrame(list(extracted_info.items()), columns=['Entity Type', 'Extracted Information'])
     return df.to_html(index=False)
 
+
 @app.route('/download')
 def download():
     if 'extracted_info' in session:
         extracted_info = session['extracted_info']
-        text_content = generate_text_content(extracted_info)
-        return send_text_file(text_content, "extracted_info.txt")
+        # Prepare data for DataFrame
+        data = []
+        for key, values in extracted_info.items():
+            for value in values:
+                data.append({"Entity Type": key, "Extracted Information": value})
+        df = pd.DataFrame(data)
+        
+        # Convert DataFrame to CSV
+        csv_data = df.to_csv(index=False)
+        
+        # Create a response with the CSV data
+        response = make_response(csv_data)
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = 'attachment; filename=extracted_info.csv'
+        return response
+
     return "No information available for download", 404
 
-def generate_text_content(extracted_info):
-    lines = []
-    for key, values in extracted_info.items():
-        lines.append(f"{key}:")
-        for value in values:
-            lines.append(f"- {value}")
-        lines.append("")
-    return "\n".join(lines)
 
-def send_text_file(text_content, filename):
-    response = make_response(text_content)
-    response.headers['Content-Type'] = 'text/plain'
+
+def generate_dataframe_for_csv(extracted_info):
+    # Flatten the extracted information for CSV format
+    # Creating a list of dictionaries, each representing a row in the CSV
+    rows = []
+    for key, values in extracted_info.items():
+        for value in values:
+            rows.append({"Entity Type": key, "Extracted Information": value})
+    # Convert list of dictionaries to a DataFrame
+    df = pd.DataFrame(rows)
+    return df
+
+def send_csv_file(csv_content, filename):
+    response = make_response(csv_content)
+    response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     return response
+
 
 if __name__ == '__main__':
     app.run(debug=True)
